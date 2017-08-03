@@ -1,2 +1,4 @@
 name: Tim testing swagger to jekyll
 markdown: kramdown
+baseurl: "/swagger-jekyll" # the subpath of your site, e.g. /blog/
+url: "http://timothymcmackin.github.io/swagger-jekyll/" # the base hostname & protocol for your site
