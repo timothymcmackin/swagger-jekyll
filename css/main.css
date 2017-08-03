@@ -1,3 +1,11 @@
+// Import partials from `sass_dir` (defaults to `_sass`)
+@import
+        "base",
+        "layout",
+        "swagger",
+        "syntax-highlighting"
+;
+
 body {
     margin: 60px auto;
     width: 70%;
@@ -33,8 +41,8 @@ footer {
     font-size: .8em;
 }
 
-ul.posts { 
-    margin: 20px auto 40px; 
+ul.posts {
+    margin: 20px auto 40px;
     font-size: 1.5em;
 }
 
