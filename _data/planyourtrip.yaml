@@ -1,0 +1,673 @@
+---
+swagger: '2.0'
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: v3
+  title: Budget Your Trip API
+  description: |
+    The Budget Your Trip API gives you programmatic access to travel cost data from around the world. With our REST API, developers can include data from Budget Your Trip in apps or websites.
+
+    Features include
+    * Average, typical travel cost data for destinations and countries around the world
+    * Currency conversions
+    * Location search based on a name or geographic coordinates
+
+    [Contact Us for an API Key](http://www.budgetyourtrip.com/contactus.php).
+
+    All endpoints are are located at `budgetyoutrip.com/api/v3/`.
+  termsOfService: http://www.budgetyourtrip.com/api/v3/documentation/terms
+
+################################################################################
+#                  Host, Base Path, Schemes and Content Types                  #
+################################################################################
+host: budgetyoutrip.com
+basePath: /api/v3
+schemes:
+  - http
+produces:
+  - application/json
+consumes:
+  - application/json
+
+################################################################################
+#                                   Tags                                       #
+################################################################################
+tags:
+  - name: Categories
+  - name: Costs
+  - name: Countries
+  - name: Currencies
+  - name: Locations
+  - name: Search
+  - name: Accommodation
+
+################################################################################
+#                                  Security                                    #
+################################################################################
+securityDefinitions:
+  key:
+    type: apiKey
+    in: header
+    name: X-API-KEY
+security:
+  - key: []
+
+################################################################################
+#                                   Parameters                                 #
+################################################################################
+parameters:
+  categoryid:
+    name: categoryid
+    in: path
+    description: The category identifier number
+    type: number
+    required: true
+  geonameid:
+    name: geonameid
+    in: path
+    description: The location (geoname) identifier number
+    type: number
+    required: true
+  name:
+    name: name
+    in: path
+    description: The name, or partial name, to search for
+    type: string
+    required: true
+  country_code:
+    name: country_code
+    in: path
+    description: 2-letter ISO country code
+    type: string
+    required: true
+  currency_code:
+    name: currency_code
+    in: path
+    description: 3-letter ISO currency code
+    type: string
+    required: true
+  from:
+    name: from
+    in: path
+    description: 3-letter ISO currency code
+    type: string
+    required: true
+  to:
+    name: to
+    in: path
+    description: 3-letter ISO currency code
+    type: string
+    required: true
+  latitude:
+    name: latitude
+    in: path
+    description: The latitude component of the geographic coordinates
+    type: number
+    required: true
+  longitude:
+    name: longitude
+    in: path
+    description: The longitude component of the geographic coordinates
+    type: number
+    required: true
+  amount:
+    name: amount
+    in: path
+    description: The value of the amount
+    type: number
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+  /categories:
+    get:
+      tags:
+        - Categories
+      description: Get the list of categories.
+      responses:
+        200:
+          description: An array of category objects
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Category'
+  /categories/{categoryid}:
+    parameters:
+        - $ref: '#/parameters/categoryid'
+    get:
+      tags:
+        - Categories
+      description: Get a category.
+      responses:
+        200:
+          description: A category object
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                  $ref: '#/definitions/Category'
+  /countries:
+    get:
+      tags:
+        - Countries
+      description: Retrieves information about countries.
+      responses:
+        200:
+          description: An Array of country objects
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Country'
+  /countries/{country_code}:
+    parameters:
+      - $ref: '#/parameters/country_code'
+    get:
+      tags:
+        - Countries
+      description: Get a country.
+      responses:
+        200:
+          description: A country object
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                  $ref: '#/definitions/Country'
+  /currencies:
+    get:
+      tags:
+        - Currencies
+      description: Retrieves information about currencies.
+      responses:
+        200:
+          description: An Array of currency objects
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Currency'
+  /currencies/{currency_code}:
+    parameters:
+      - $ref: '#/parameters/currency_code'
+    get:
+      tags:
+        - Currencies
+      description: Get a currency.
+      responses:
+        200:
+          description: A currency object
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                $ref: '#/definitions/Currency'
+  /currencies/convert/{from}/{to}/{amount}:
+    parameters:
+      - $ref: '#/parameters/from'
+      - $ref: '#/parameters/to'
+      - $ref: '#/parameters/amount'
+    get:
+      tags:
+        - Currencies
+      description: Performs currency conversion.
+      responses:
+        200:
+          description: An object containing the conversion factor and amount
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                $ref: '#/definitions/CurrencyConversion'
+  /locations/{geonameid}:
+    parameters:
+      - $ref: '#/parameters/geonameid'
+    get:
+      tags:
+        - Locations
+      description: Gets details about a location.
+      responses:
+        200:
+          description: An object containing the location
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                $ref: '#/definitions/Location'
+  /search/location/{name}:
+    parameters:
+      - $ref: '#/parameters/name'
+    get:
+      tags:
+        - Locations
+        - Search
+      description: This will search all locations in the system (about 160,000), whether or not they have travel cost data. If you only wish to search for locations with travel cost data, see /search/locationdata. Searches will query against the name and alternative names fields in the system. As many cities have multiple names, this will help bring up relevant search results. Furthermore, some countries (U.S., Canada, and a few others) also have zip and postal codes listed in their alternative names, so it is possible to perform a postal code search for a location.
+      responses:
+        200:
+          description: An object containing an array of locations
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Location'
+  /search/locationdata/{name}:
+    parameters:
+        - $ref: '#/parameters/name'
+    get:
+      tags:
+        - Locations
+        - Search
+      description: Searches for a location by name that contains travel cost data. This will search only locations in the system which have travel cost data (approximately 3,000, and growing every week). If you wish to search across all locations, see /search/location. Searches will query against the name and alternative names fields in the system. As many cities have multiple names, this will help bring up relevant search results. Furthermore, some countries (U.S., Canada, and a few others) also have zip and postal codes listed in their alternative names, so it is possible to perform a postal code search for a location.
+      responses:
+        200:
+          description: An object containing an array of locations
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Location'
+  /search/geo/{latitude}/{longitude}:
+    parameters:
+      - $ref: '#/parameters/latitude'
+      - $ref: '#/parameters/longitude'
+    get:
+      tags:
+        - Locations
+        - Search
+        - Geo
+      description: Searches for locations by geographic coordinates, and returns locations in close proximity. This will search all locations in the system (about 160,000), whether or not they have travel cost data. If you only wish to search for locations with travel cost data, see /search/geodata. Note this is a resource-intensive operation. Consumers of this request should cache the results until the user has significantly changed their location, perhaps by 25 miles (40km) or more. Otherwise, the search results will not change and the system will be taxed unnecessarily.
+      responses:
+        200:
+          description: An object containing an array of locations
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Location'
+  /search/geodata/{latitude}/{longitude}:
+    parameters:
+      - $ref: '#/parameters/latitude'
+      - $ref: '#/parameters/longitude'
+    get:
+      tags:
+        - Locations
+        - Search
+        - Geo
+      description: Searches for locations by geographic coordinates, and returns locations in close proximity. This will search only locations in the system which have travel cost data (approximately 3,000, and growing every week). If you wish to search across all locations, see /search/geo. Note this is a resource-intensive operation. Consumers of this request should cache the results until the user has significantly changed their location, perhaps by 25 miles (40km) or more. Otherwise, the search results will not change and the system will be taxed unnecessarily.
+      responses:
+        200:
+          description: An object containing an array of locations
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Location'
+  /costs/country/{country_code}:
+    parameters:
+      - $ref: '#/parameters/country_code'
+    get:
+      tags:
+        - Costs
+        - Countries
+      description: Retrieves travel cost data for a country.
+      responses:
+        200:
+          description: |
+            The returning data structure contains an array of travel cost objects, containing the typical travel costs for low-end (budget), mid-range, and luxury budgets for each category.
+
+            Note that the last object will have a category_id of 0, which is the overall total average cost for this country. Note that these total costs are not a direct sum of all of the category costs, but instead are a specifically calculated amount based on actual travel spending.
+
+            The travel cost amounts are in the local currency. To get this currency, obtain the details about the country from the /country/{country_code} endpoint.
+
+            Note In many cases, not all categories for a location will have travel costs data, and will be missing in the response data.
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/CostData'
+  /costs/location/{geonameid}:
+    parameters:
+      - $ref: '#/parameters/geonameid'
+    get:
+      tags:
+        - Costs
+        - Locations
+      description: Retrieves travel cost data for a location.
+      responses:
+        200:
+          description: |
+            The returning data structure contains an array of travel cost objects, containing the typical travel costs for low-end (budget), mid-range, and luxury budgets for each category.
+
+            Note that the last object will have a category_id of 0, which is the overall total average cost for this country. Note that these total costs are not a direct sum of all of the category costs, but instead are a specifically calculated amount based on actual travel spending.
+
+            The travel cost amounts are in the local currency. To get this currency, obtain the details about the country from the /country/{country_code} endpoint.
+
+            Note In many cases, not all categories for a location will have travel costs data, and will be missing in the response data.
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/CostData'
+  /costs/highlights/{geonameid}:
+    parameters:
+      - $ref: '#/parameters/geonameid'
+    get:
+      tags:
+        - Costs
+        - Locations
+      description: Retrieves travel highlights for a location. Highlights are specific curated examples of actual costs in a location. For example, Lunch at a restaurant, $35.
+      responses:
+        200:
+          description: |
+            The returning data structure contains an array of highlight objects, containing the specific cost examples for the location.
+
+            The travel cost amounts are in the local currency. To get this currency, obtain the details about the location from the /location/{geonameid} endpoint.
+
+            Note In many cases, locations will not have highlights, and the results will be an empty array.
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/CostHighlight'
+  /accommodation/search/{name}:
+    parameters:
+      - $ref: '#/parameters/name'
+    get:
+      tags:
+        - Accommodation
+        - Search
+      description: Retrieves a list of accommodation options with the given search name.
+      responses:
+        200:
+          description: |
+            The returning data structure contains an array of accommodation (hotel or hostel) objects.
+
+            Note it is against the Terms of Use to modify or change the URL component of the accommodation data.
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/AccommodationItem'
+  /accommodation/location/{geonameid}:
+    parameters:
+      - $ref: '#/parameters/name'
+    get:
+      tags:
+        - Accommodation
+        - Search
+        - Locations
+      description: Retrieves a list of accommodation options with the given location (geonameid).
+      responses:
+        200:
+          description: |
+            The returning data structure contains an array of accommodation (hotel or hostel) objects.
+
+            Note it is against the Terms of Use to modify or change the URL component of the accommodation data.
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/AccommodationItem'
+  /accommodation/geosearch/{latitude}/{longitude}:
+    parameters:
+      - $ref: '#/parameters/latitude'
+      - $ref: '#/parameters/longitude'
+    get:
+      tags:
+        - Accommodation
+        - Search
+        - Geo
+      description: Retrieves a list of accommodation options near the specified coordinates.
+      responses:
+        200:
+          description: |
+            The returning data structure contains an array of accommodation (hotel or hostel) objects.
+
+            Note it is against the Terms of Use to modify or change the URL component of the accommodation data.
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/definitions/Status'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/AccommodationItem'
+
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  Status:
+    type: boolean
+  Category:
+    type: object
+    properties:
+      category_id:
+        description: Unique id
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+  Country:
+    type: object
+    properties:
+      country_code:
+        description: 2-letter ISO country code, unique
+        type: string
+      name:
+        type: string
+      currency_code:
+        description: 3-letter ISO currency code
+        type: string
+      negotiate:
+        description: the usual amount for which tourists need to negotiate for prices
+        type: integer
+  Currency:
+    type: object
+    properties:
+      currency_code:
+        description: 3-letter ISO currency code, unique
+        type: string
+      currency:
+        description: The name of the currency
+        type: string
+      symbol:
+        description: The commonly used symbol of the currency, optional
+        type: string
+  CurrencyConversion:
+    type: object
+    properties:
+      from:
+        description: 3-letter ISO currency code of the FROM currency
+        type: string
+      to:
+        description: 3-letter ISO currency code of the TO currency
+        type: string
+      originalAmount:
+        description: The original amount to convert
+        type: string
+      rate:
+        description: The conversion rate of the 2 currencies
+        type: string
+      newAmount:
+        description: The conversion rate multiplied by the original amount
+        type: string
+  Location:
+    type: object
+    properties:
+      geonameid:
+        type: integer
+      name:
+        type: string
+      asciiname:
+        type: string
+      alternativenames:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      feature_class:
+        type: string
+      feature_code:
+        type: string
+      country_code:
+        type: string
+      admin1_code:
+        description: the state/province code
+        type: string
+      timezone:
+        type: string
+      country_name:
+        type: string
+      negotiate:
+        type: integer
+        description: how much the traveler needs to negotiate for prices
+      currency_code:
+        type: string
+      currency:
+        type: string
+      symbol:
+        type: string
+        description: the optional currency symbol
+      statename:
+        type: string
+      url:
+        type: string
+  CostData:
+    type: object
+    properties:
+      category_id:
+        type: integer
+      value_budget:
+        type: number
+      value_midrange:
+        type: number
+      value_luxury:
+        type: number
+      country_code:
+        type: string
+      geonameid:
+        type: integer
+  CostHighlight:
+    type: object
+    properties:
+      description:
+        type: string
+      category_id:
+        type: integer
+      cost:
+        type: number
+  AccommodationItem:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+      url:
+        type: string
+        description: The URL to book this accommodation
+      longitude:
+        type: number
+      latitude:
+        type: number
+      dormavailable:
+        type: string
+      dormprice:
+        type: number
+      dormcurrency:
+        type: string
+      privateavailable:
+        type: string
+      privateprice:
+        type: number
+      privatecurrency:
+        type: string
+      rating_overall:
+        type: number
+        description: rating out of 100 max
+      addr1:
+        type: string
+      addr2:
+        type: string
+      addr3:
+        type: string
+      zip:
+        type: string
+        description: zip or postal code
+      city:
+        type: string
+      country:
+        type: string
+        description: The name of the country
+
+
